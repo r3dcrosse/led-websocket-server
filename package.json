@@ -1,0 +1,27 @@
+{
+  "name": "led-websocket-server",
+  "version": "1.0.0",
+  "description": "Experimental websocket server to drive LED-connected esp32 arduinos",
+  "main": "index.js",
+  "scripts": {
+    "start:dev": "nodemon src/index.js",
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/r3dcrosse/led-websocket-server.git"
+  },
+  "author": "r3dcrosse",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/r3dcrosse/led-websocket-server/issues"
+  },
+  "homepage": "https://github.com/r3dcrosse/led-websocket-server#readme",
+  "dependencies": {
+    "express": "^4.16.3",
+    "socket.io": "^2.1.1"
+  },
+  "devDependencies": {
+    "nodemon": "^1.18.0"
+  }
+}
