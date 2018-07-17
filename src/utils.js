@@ -19,7 +19,7 @@ function makeAllWhite(pixelCount) {
 }
 
 function makeAllTrueWhite(pixelCount) {
-  const trueWhitePixel = ['000', '000', '000', '005'];
+  const trueWhitePixel = ['000', '000', '000', '255'];
   return makeAllOneColor(trueWhitePixel, pixelCount);
 }
 

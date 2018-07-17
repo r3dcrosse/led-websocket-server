@@ -27,7 +27,7 @@ function assembleFrame(node, frameArray) {
 
 function getFrame(time, node) {
   const pixelCount = 25;
-  const frameArray = utils.makeAllBlack(pixelCount);
+  const frameArray = utils.makeAllTrueWhite(pixelCount);
 
   const cyan = "064,224,208,000";
   const red = "150,000,024,000";
@@ -43,15 +43,15 @@ function getFrame(time, node) {
   // frameArray[time % (pixelCount - 7)] = cyan;
   // frameArray[time % (pixelCount - 8)] = white;
   if (node === 1) {
-    frameArray[time % pixelCount] = "000,000,000,010";
-    // frameArray[(time - 1) % (pixelCount)] = cyan;
-    // frameArray[(time - 2) % (pixelCount)] = tiffBlue2;
-    // frameArray[time % (pixelCount - 2)] = "255, 255, 255, 255";
+    frameArray[time % pixelCount] = "000,000,000,255";
+    frameArray[(time - 1) % (pixelCount)] = white;
+    frameArray[(time - 2) % (pixelCount)] = tiffBlue2;
+    frameArray[time % (pixelCount - 2)] = "255, 255, 255, 255";
   } else if (node === 2) {
-    frameArray[time % pixelCount] = "000,000,000,010";
-    // frameArray[(time - 1) % (pixelCount)] = white;
-    // frameArray[(time - 2) % (pixelCount)] = "100,000,100,010";
-    // frameArray[time % (pixelCount - 2)] = tiffBlue2;
+    frameArray[time % pixelCount] = "000,000,000,255";
+    frameArray[(time - 1) % (pixelCount)] = white;
+    frameArray[(time - 2) % (pixelCount)] = "100,000,100,010";
+    frameArray[time % (pixelCount - 2)] = tiffBlue2;
   }
 
   return assembleFrame(node, frameArray);
