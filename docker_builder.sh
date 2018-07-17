@@ -10,12 +10,13 @@ usage() {
 
 main() {
     local docker_tag=$1
-    local port="${$1:-3000}"
+    local port=$2
+    local default_port="${port:-3000}"
 
     if [[ ! -z $docker_tag ]]; then
         (
         docker build -t $docker_tag .;
-        docker run -p $port:3000 -d $docker_tag;
+        docker run -p $default_port:3000 -d $docker_tag;
         )
     else
         usage
