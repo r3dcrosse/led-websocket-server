@@ -27,7 +27,7 @@ function assembleFrame(node, frameArray) {
 
 function getFrame(time, node) {
   const pixelCount = 25;
-  const frameArray = utils.makeAllTrueWhite(pixelCount);
+  const frameArray = utils.makeAllBlack(pixelCount);
 
   const cyan = "064,224,208,000";
   const red = "150,000,024,000";
