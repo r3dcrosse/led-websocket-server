@@ -4,8 +4,9 @@
   "description": "Experimental websocket server to drive LED-connected esp32 arduinos",
   "main": "index.js",
   "scripts": {
-    "start:dev": "nodemon src/index.js",
     "start": "node src/index.js",
+    "start:dev": "nodemon src/index.js 2>&1 | tee server_dev.log",
+    "start:log": "node src/index.js 2>&1 | tee server.log",
     "test": "echo \"Error: no test specified\" && exit 1",
     "docker:build": "./docker_builder.sh"
   },

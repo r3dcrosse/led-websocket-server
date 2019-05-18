@@ -9,7 +9,12 @@ const frame1 = require('./frame1');
 const frame2 = require('./frame2');
 const utils = require('./utils');
 
-server.listen(port, () => console.log(`Server listening at port ${port}`));
+const FRAME_GENERATOR_TIME_INTERVAL = '1000m';
+const WEBSOCKET_STREAM_RATE = '500m';
+
+const date = new Date();
+
+server.listen(port, () => console.log(`[${date.toUTCString()}] INFO: server listening at port ${port}`));
 
 function assembleFrame(node, frameArray) {
   let frame = `${node}:`;
@@ -22,11 +27,12 @@ function assembleFrame(node, frameArray) {
     }
   });
 
+  // console.log('FRAME', frame)
   return frame;
 }
 
 function getFrame(time, node) {
-  const pixelCount = 25;
+  const pixelCount = 120;
   const frameArray = utils.makeAllBlack(pixelCount);
 
   const cyan = "064,224,208,000";
@@ -36,16 +42,17 @@ function getFrame(time, node) {
   const white = "000,000,000,255";
 
   // console.log(`FRAME: ${time}`);
-  // frameArray[time % (pixelCount + 1)] = red;
-  // frameArray[time % (pixelCount - 2)] = white;
-  // frameArray[time % (pixelCount - 3)] = tiffBlue2;
-  // frameArray[time % (pixelCount - 4)] = tiffanyBlue;
-  // frameArray[time % (pixelCount - 6)] = red;
-  // frameArray[time % (pixelCount - 7)] = cyan;
-  // frameArray[time % (pixelCount - 8)] = white;
+
   if (node === 1) {
-    frameArray[time % pixelCount] = "000,000,000,005";
-    frameArray[Math.abs((time % pixelCount) - pixelCount)] = '000,005,005,000';
+    // frameArray[time % pixelCount] = "030,050,200,000";
+    frameArray[time % pixelCount] = tiffBlue2;
+    // frameArray[time % (pixelCount - 1)] = white;
+    frameArray[time - 1 % (pixelCount)] = tiffBlue2;
+    frameArray[time - 2 % (pixelCount)] = tiffanyBlue;
+    frameArray[time - 3 % (pixelCount)] = red;
+    frameArray[time - 4 % (pixelCount)] = cyan;
+    // frameArray[time % (pixelCount - 6)] = white;
+    // frameArray[Math.abs((time % pixelCount) - pixelCount)] = '000,005,005,000';
     // frameArray[(time - 1) % (pixelCount)] = white;
     // frameArray[(time - 2) % (pixelCount)] = tiffBlue2;
     // frameArray[time % (pixelCount - 2)] = "255, 255, 255, 255";
@@ -69,7 +76,7 @@ timeKeeper.setInterval(() => {
   } else {
     time.frame = time.frame + 1;
   }
-}, '', '60m');
+}, '', FRAME_GENERATOR_TIME_INTERVAL);
 
 function frameGenerator(socket, node) {
   socket.emit(getFrame(time.frame, node));
@@ -78,12 +85,13 @@ function frameGenerator(socket, node) {
 let nodes = [];
 
 io.on('connection', (socket) => {
+  let nodeNumber = null;
   const ticker = new NanoTimer();
   const tocker = new NanoTimer();
 
-  const websocketStreamRate = '10m';
-  const date = new Date();
-  console.log(`[${date.toUTCString()}]: Something connected`);
+  console.log(`[${date.toUTCString()}] INFO: new websocket connection opened`);
+  console.log(`[${date.toUTCString()}] DEBUG: frame generator time interval ${FRAME_GENERATOR_TIME_INTERVAL}`);
+  console.log(`[${date.toUTCString()}] DEBUG: websocket stream rate ${WEBSOCKET_STREAM_RATE}`);
 
   socket.on('ping', ({ node }) => {
     // console.log('SENDING BACK ping FOR node', node);
@@ -99,13 +107,15 @@ io.on('connection', (socket) => {
   });
 
   socket.on('nodeConnected', ({ node }) => {
+    nodeNumber = node;
+
     if (nodes.indexOf(socket) === -1) {
       nodes.push(socket);
-      console.log('THIS NODE CONNECTED:', node);
-      ticker.setInterval(frameGenerator, [socket, node], websocketStreamRate);
+      console.log(`[${date.toUTCString()}] INFO: node ${node} connected`);
+      ticker.setInterval(frameGenerator, [socket, node], WEBSOCKET_STREAM_RATE);
     } else {
       const date = new Date();
-      console.log(`[${date.toUTCString()}]: Node ${node} is still connected!!!!`);
+      // console.log(`[${date.toUTCString()}] DEBUG: node ${node} is still connected!!!`);
       // When we get a message that a node is still connected, we should
       // send back a pong so the node can measure the latency
       socket.emit(`${node}z`);
@@ -117,7 +127,7 @@ io.on('connection', (socket) => {
       nodes.splice(socket, 1);
     }
     const date = new Date();
-    console.log(`[${date.toUTCString()}]: A socket disconnected.....`);
+    console.log(`[${date.toUTCString()}] INFO: node ${nodeNumber} disconnected`);
     ticker.clearInterval();
   });
 });
